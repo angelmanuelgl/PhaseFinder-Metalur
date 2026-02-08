@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title> Metalur-App | Diagramas de Fase</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+   <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<header class="header-ug text-center">
+    <div class="container">
+        <h1>Metalur-App UG</h1>
+        <p class="lead">Cálculo de Regla de la Palanca (PROVISIONAL)</p>
+    </div>
+</header>
+
+<div class="container">
+    <div class="row">
+        <div class="col-lg-8 text-center">
+            <div class="canvas-container mb-4">
+                <canvas id="canvasGrafica"></canvas>
+                <p class="text-muted mt-2 small">Haz clic en la gráfica para obtener los límites de fase</p>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="sidebar">
+                <h4 class="mb-3">Configuración</h4>
+                
+                <div class="mb-3">
+                    <label for="selectMaterial" class="form-label">Seleccionar Material:</label>
+                    <select class="form-select" id="selectMaterial">
+                        <option value="" selected disabled>Cargando configuraciones...</option>
+                    </select>
+                </div>
+
+                <div class="result-card">
+                    <h5>Resultados</h5>
+                    <div id="status">Selecciona un punto...</div>
+                    <hr>
+                    <p><strong>Límite Izquierdo:</strong> <span id="resIzq">-</span></p>
+                    <p><strong>Límite Derecho:</strong> <span id="resDer">-</span></p>
+                </div>
+
+                <div class="mb-3 p-3 border rounded bg-light">
+                    <h6>Entrada Manual</h6>
+                    <div class="row g-2">
+                        <div class="col-6">
+                            <label class="small">Temp (<span class="unit-y">°C</span>)</label>
+                            <input type="number" id="inputTemp" class="form-control form-control-sm" step="0.1">
+                        </div>
+                        <div class="col-6">
+                            <label class="small">Comp (<span class="unit-x">%</span>)</label>
+                            <input type="number" id="inputComp" class="form-control form-control-sm" step="0.01">
+                        </div>
+                    </div>
+                    <button class="btn btn-dark btn-sm w-100 mt-2" id="btnCalcularManual">Calcular con precisión</button>
+                </div>
+
+                <button class="btn btn-primary w-100 mt-3" id="btnReiniciar">Limpiar Puntos</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<footer class="footer-ads py-4">
+    <div class="container text-center">
+        <p class="small text-muted mb-1"><strong>Autor:</strong> Angel Manuel Gonzalez Lopez</p>
+        <p class="small text-muted mb-2">Lic. Matemáticas Computacionales, CIMAT</p>
+        
+        <div class="footer-links">
+            <a href="https://github.com/angelmanuelgl" class="text-muted small me-3" target="_blank">
+                <i class="fab fa-github"></i> GitHub
+            </a>
+            <a href="https://angelmanuelgl.github.io/" class="text-muted small" target="_blank">
+                <i class="fas fa-globe"></i> Portafolio
+            </a>
+        </div>
+    </div>
+</footer>
+
+<script type="module" src="js/main.js"></script>
+</body>
+</html>

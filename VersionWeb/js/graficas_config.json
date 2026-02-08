@@ -1,0 +1,28 @@
+{
+  "hierro_delta": {
+    "archivo_usuario": "usuario_Fe_13000_16000_0_1.jpg",
+    "archivo_limpio": "limpia_Fe_13000_16000_0_1.jpeg",
+    "x_min": 0.0,
+    "x_max": 1.0,
+    "y_min": 1300.0,
+    "y_max": 1600.0,
+    "unidad_x": "%C",
+    "unidad_y": "°C",
+    "nombre_display": "Hierro-Carbono",
+    "limites_pixeles_usuario": {
+      "x_start": 45, "x_end": 436,
+      "y_start": 320, "y_end": 27
+    }    
+  },
+  "prueba": {
+    "archivo_usuario": "usuario_prueba.jpeg",
+    "archivo_limpio": "limpia_prueba.jpeg",
+    "x_min": 0.0,
+    "x_max": 100.0,
+    "y_min": 0.0,
+    "y_max": 1000.0,
+    "unidad_x": "% Comp",
+    "unidad_y": "Temp",
+    "nombre_display": "Grafica de Prueba"
+  }
+}
