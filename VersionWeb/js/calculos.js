@@ -7,7 +7,7 @@ export function valorAPixel(v, vMin, vMax, pMax, invertir = false) {
 }
 
 /**
- * Convierte Píxel a valor real
+ * Convierte Pixel a valor real
  */
 export function pixelAValor(p, pMax, vMin, vMax, invertir = false) {
     const porcentaje = p / pMax;
@@ -71,10 +71,13 @@ export function procesarPunto(valX, valY, materialConfig, ctxLimpio) {
     const { pIzq, pDer } = buscarVecinos(imageData, px, width);
 
     // 4. Pixel -> Real
+    const izqReal= pIzq !== null ? pixelAValor(pIzq, width, x_min, x_max) : null;
+    const derReal= pDer !== null ? pixelAValor(pDer, width, x_min, x_max) : null;
+
     return {
-        izqReal: pIzq !== null ? pixelAValor(pIzq, width, x_min, x_max) : null,
-        derReal: pDer !== null ? pixelAValor(pDer, width, x_min, x_max) : null,
-        px, py // devolvemos px/py para dibujar marcadores luego
+        izqReal:izqReal, derReal:derReal, // RESPUESTAS en cordenadas reales
+        pIzq, pDer, // RES[UESTA en cordenadas pixeles
+        px, py // devolvemos poscion  en coordenas p
     };
 }
 
@@ -98,7 +101,7 @@ export function datosRealesAClic(v, vMin, vMax, pStart, pEnd, invertir = false) 
     const pMaxRelativo = pEnd - pStart;
     
     // 1. Obtenemos la posición dentro del área de la gráfica
-    const pRelativo = valorAPixel(v, vMin, vMax, pMaxRelativo, invertir);
+    const pRelativo = valorAPixel(v, vMin, vMax, pMaxRelativo, false);
     
     // 2. Trasladamos de regreso al origen de la imagen completa
     return pStart + pRelativo;

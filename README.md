@@ -12,9 +12,14 @@ Herramienta integral para la digitalización y análisis de diagramas de fase me
 
 La aplicación permite a los usuarios seleccionar una gráfica, realizar clics en puntos de interés y obtener automáticamente los límites de fase, convirtiendo píxeles en unidades reales de temperatura y composición.
 
----
+## Aplicacion Final
 
-## 🛠️ Estructura del Proyecto
+<img width="1012" height="628" alt="Image" src="https://github.com/user-attachments/assets/f66be9e8-33d3-43aa-bbd9-4cb18cd897b4" />
+
+![Image](https://github.com/user-attachments/assets/2d3403e3-26fd-4060-84bb-052760a6eb92)
+
+
+## Estructura del Proyecto
 
 El repositorio se divide en dos módulos principales:
 
@@ -22,11 +27,10 @@ El repositorio se divide en dos módulos principales:
 Ubicado en la carpeta `TratamientoImagenes/`.
 * **`limpieza.py`**: Utiliza **OpenCV** para binarizar la imagen con un umbral inverso (`cv2.THRESH_BINARY_INV`) y detecta el contorno más grande para aislar el marco.
 * **`main.py`**: Procesa las imágenes originales y guarda los resultados limpios en una nueva carpeta.
-* **`funciones_graf.py`**: Contiene la lógica para la conversión bidireccional entre coordenadas de píxeles y valores reales (regla de tres).
 
 ### 2. Versión Web (JavaScript)
 Ubicada en `VersionWeb/`.
-* **`calculos.js`**: Implementa el algoritmo de "vecinos horizontales" que escanea la fila de píxeles buscando el primer blanco (255) a la izquierda y derecha del clic.
+* **`calculos.js`**: Implementa el algoritmo de "vecinos horizontales" que escanea la fila de píxeles buscando el primer blanco (255) a la izquierda y derecha del clic ademas de encargarse de la conversion entre los diferentes sitemas de coorrdenadas usados
 * **`canvas.js`**: Gestiona el renderizado de la imagen en el lienzo y el dibujo de marcadores visuales.
 * **`cargar.js`**: Carga de forma asíncrona la configuración JSON y genera dinámicamente el selector de materiales.
 * **`graficas_config.json`**: Almacena los metadatos, límites de escala ($X_{min}, X_{max}, Y_{min}, Y_{max}$) y rutas de archivos para cada material.

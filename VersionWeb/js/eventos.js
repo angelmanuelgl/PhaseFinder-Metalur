@@ -67,9 +67,25 @@ export function registrarEventos(state) {
             state.materialSeleccionado,
             state.ctxLimpio
         );
-         console.log("ingresado:", valComp, valTemp);
+        console.log("ingresado:", valComp, valTemp);
 
-        // 3. Actualizar Textos (UI)
+        // 3. DAR RESPUESTA /// dibujando en el canvas
+
+        canvasTool.refrescarLienzo(state.elementos.canvas.getContext('2d'), state.imagenActual);
+        
+        marcarPuntoEnGrafica("bolita", valComp, valTemp, state);
+        // 2. Las cruces rojas de los límites encontrados
+        if (resultados.izqReal) {
+            marcarPuntoEnGrafica("cruz", resultados.izqReal, valTemp, state);
+            console.log("limite izquierda");
+        }
+        if (resultados.derReal) {
+            marcarPuntoEnGrafica("cruz", resultados.derReal, valTemp, state);
+            console.log("limite derehca");
+        }
+
+
+        // 3. DAR RESPUESTA ///  Actualizar Textos (UI)
         state.elementos.resIzq.textContent = resultados.izqReal?.toFixed(4) || "No encontrado";
         state.elementos.resDer.textContent = resultados.derReal?.toFixed(4) || "No encontrado";
 
@@ -83,66 +99,151 @@ export function registrarEventos(state) {
     /*
         C L I C K   E N  C A N V A S
     */
-
-state.elementos.canvas.addEventListener('click', (e) => {
-    const canvas = state.elementos.canvas;
-    const rect = canvas.getBoundingClientRect();
-
-    // 1. Calculamos la posición RELATIVA (de 0 a 1)
-    // Esto es lo único que NO cambia con el zoom o el tamaño de pantalla
-    const xRel = (e.clientX - rect.left) / rect.width;
-    const yRel = (e.clientY - rect.top) / rect.height;
-
-    // 2. Lo convertimos a la "Escala de Calibración"
-    // Usamos el ancho visual base (clientWidth) que es el que usaste en tu JSON.
-    // OJO: Si tu JSON lo hiciste con el canvas midiendo 480px, puedes poner 480 fijo aquí.
-    const x = Math.round(xRel * canvas.clientWidth);
-    const y = Math.round(yRel * canvas.clientHeight);
-
-    // EL CONSOLE LOG QUE BUSCABAS
-    alert(`%c Coordenadas para el JSON: [X: ${x}, Y: ${y}]`, "color: yellow; background: black; font-weight: bold;");
-
-    // ... resto de tu lógica para valComp y valTemp usando este x e y ...
     
-    // Debug extra para que veas qué está pasando:
-    alert(`Debug -> xRel: ${xRel.toFixed(4)}, clientWidth: ${canvas.clientWidth}, zoom: ${window.devicePixelRatio}`);
-});
+    /*  ---  ---  ESTO ES PARA QUE ME SE MAS FACIL AGREGAR UNA NUEVA GRAFICA --- ---  */
+    // state.elementos.canvas.addEventListener('click', (e) => {
+    //     const canvas = state.elementos.canvas;
+    //     const rect = canvas.getBoundingClientRect();
+
+    //     // 1. posicion RELATIVA (de 0 a 1)
+    //     const xRel = (e.clientX - rect.left) / rect.width;
+    //     const yRel = (e.clientY - rect.top) / rect.height;
+        
+    //     //! info importante para poner en el json
+    //     // alert(`xRel: ${xRel.toFixed(4)}, clientWidth: ${canvas.clientWidth}, zoom: ${window.devicePixelRatio}`);
+    //     // alert(`xRel: ${xRel.toFixed(4)}, yRel: ${yRel.toFixed(4)},`);
+
+
+    //     if (!info || !info.limites_pixeles_usuario) {
+    //         console.log(`%c [DEBUG] xRel: ${xRel.toFixed(4)}, yRel: ${yRel.toFixed(4)}`, "color: cyan;");
+    //         return;
+    //     }
+
+    // });
+    state.elementos.canvas.addEventListener('click', (e) => {
+        const canvas = state.elementos.canvas;
+        const rect = canvas.getBoundingClientRect();
+        const info = state.materialSeleccionado;
+
+        // 1. posicion RELATIVA (Invariante)
+        const xRel = (e.clientX - rect.left) / rect.width;
+        const yRel = (e.clientY - rect.top) / rect.height;
+
+        if (!info || !info.limites_pixeles_usuario) {
+            console.log(`%c [DEBUG] xRel: ${xRel.toFixed(4)}, yRel: ${yRel.toFixed(4)}`, "color: cyan;");
+            return;
+        }
+
+        const cal = info.limites_pixeles_usuario;
+
+        // 2. Calculo de valores reales usando xRel/yRel como el parámetro 'p'
+        // Pasamos xRel como posición, y x_start/x_end como los límites (también en 0-1)
+        const valComp = calculos.clicADatosReales(
+            xRel, 
+            cal.x_start, 
+            cal.x_end, 
+            info.x_min, 
+            info.x_max
+        );
+
+        const valTemp = calculos.clicADatosReales(
+            yRel, 
+            cal.y_start, 
+            cal.y_end, 
+            info.y_min, 
+            info.y_max
+            // El parámetro 'invertir' no es necesario si y_start es mayor que y_end en el JSON
+            // Pero tu función lo gestiona internamente si lo necesitas.
+        );
+
+        // 3. Log de resultados
+        // alert(`%c Resultados: ${valComp.toFixed(3)}${info.unidad_x} | ${valTemp.toFixed(1)}${info.unidad_y}`, "color: #00ff00; font-weight: bold;");
+        
+        actualizarInputsUI(state, valTemp, valComp);
+
+        // Disparar el cálculo manual automáticamente
+        state.elementos.btnManual.click();
+    
+    });
+
+
+    // reetear
+    state.elementos.btnReiniciar.addEventListener('click', (e) => {
+        canvasTool.refrescarLienzo(state.elementos.canvas.getContext('2d'), state.imagenActual);
+    
+    });
 }
 
 // js/interactuar.js
 
-function actualizarGrafica(state, resultados, valComp, valTemp) {
+/**
+ * Actualiza los campos de entrada manual con los valores calculados
+ * @param {Object} state - El estado global de la aplicación
+ * @param {number} temperatura - Valor de temperatura (eje Y)
+ * @param {number} composicion - Valor de composición/carbono (eje X)
+ */
+export function actualizarInputsUI(state, temperatura, composicion) {
+    // 1. Validamos que los elementos existan en el state
+    const { inputTemp, inputComp } = state.elementos;
+
+    if (inputTemp && inputComp) {
+        // 2. Formateamos los valores:
+        // Temperatura: Generalmente sin decimales o con 1 (°C)
+        // Composición: Con 3 decimales para precisión en metalurgia (%C)
+        inputTemp.value = temperatura.toFixed(1);
+        inputComp.value = composicion.toFixed(3);
+        
+        // Opcional: Podrías disparar un pequeño efecto visual o log
+        // console.log("UI Actualizada: ", { temperatura, composicion });
+    }
+}
+
+/**
+ * Traduce valores reales a coordenadas del canvas y dibuja el elemento
+ * @param {string} tipo - "bolita" o "cruz"
+ * @param {number} valorX - % de Carbono (Real)
+ * @param {number} valorY - Temperatura (Real)
+ * @param {Object} state - Estado global
+ */
+function marcarPuntoEnGrafica(tipo, valorX, valorY, state) {
     const canvas = state.elementos.canvas;
     const ctx = canvas.getContext('2d');
     const info = state.materialSeleccionado;
     const cal = info.limites_pixeles_usuario;
 
-    // 1. Limpiar el fondo
-    canvasTool.refrescarLienzo(ctx, state.imagenActual);
+    // 1. TRADUCIR límites del JSON (0-1) a Píxeles Reales del Canvas (0-4460)
+    // Esto es lo que faltaba: que Start y End estén en la misma escala que el Canvas
+    const xStartPx = cal.x_start * canvas.width;
+    const xEndPx = cal.x_end * canvas.width;
+    const yStartPx = cal.y_start * canvas.height;
+    const yEndPx = cal.y_end * canvas.height;
 
-    // 2. EL FACTOR DE CORRECCIÓN
-    // Si el canvas interno mide 4000 y en pantalla ves 400, el factor es 10.
-    const factor = canvas.width / canvas.clientWidth;
+    // 2. CALCULAR Píxel Final
+    // Ahora pasamos píxeles a la función, no porcentajes.
+    const pxFinal = calculos.datosRealesAClic(
+        valorX, 
+        info.x_min, 
+        info.x_max, 
+        xStartPx, 
+        xEndPx
+    );
 
-    // 3. OBTENER PÍXELES USANDO TU FUNCIÓN (La que ya tenemos)
-    // Pasamos los datos reales y nos devuelve píxeles de pantalla. 
-    // Luego multiplicamos por el factor para ir al mundo real del canvas.
-    const pxCentro = calculos.datosRealesAClic(valComp, info.x_min, info.x_max, cal.x_start, cal.x_end) * factor;
-    const pyCentro = calculos.datosRealesAClic(valTemp, info.y_min, info.y_max, cal.y_start, cal.y_end) * factor;
+    const pyFinal = calculos.datosRealesAClic(
+        valorY, 
+        info.y_min, 
+        info.y_max, 
+        yStartPx, 
+        yEndPx,
+        true // Invertir para temperatura
+    );
 
-    // 4. Radio proporcional (que se vea de unos 10px en pantalla siempre)
-    const radioAjustado = 5 * factor;
+    // 3. Tamaño del punto
+    const size = canvas.width * 0.01;
 
-    // 5. DIBUJAR
-    canvasTool.dibujarBola(ctx, pxCentro, pyCentro, radioAjustado);
-
-    if (resultados.izqReal !== null) {
-        const pxIzq = calculos.datosRealesAClic(resultados.izqReal, info.x_min, info.x_max, cal.x_start, cal.x_end) * factor;
-        canvasTool.dibujarCruz(ctx, pxIzq, pyCentro, radioAjustado * 1.0);
-    }
-
-    if (resultados.derReal !== null) {
-        const pxDer = calculos.datosRealesAClic(resultados.derReal, info.x_min, info.x_max, cal.x_start, cal.x_end) * factor;
-        canvasTool.dibujarCruz(ctx, pxDer, pyCentro, radioAjustado * 1.0);
+    // 4. Dibujar (Sin multiplicar por nada, porque pxFinal ya es el píxel exacto)
+    if (tipo === "bolita") {
+        canvasTool.dibujarBola(ctx, pxFinal, pyFinal, size);
+    } else if (tipo === "cruz") {
+        canvasTool.dibujarCruz(ctx, pxFinal, pyFinal, size * 1.2);
     }
 }

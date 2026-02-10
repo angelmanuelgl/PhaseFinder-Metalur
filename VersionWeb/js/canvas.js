@@ -34,25 +34,51 @@ export async function ImagenEnCanvas(ruta, canvas) {
 /**
  * Dibuja un círculo sólido (Bola azul)
  */
-export function dibujarBola(ctx, x, y, radio = 8) {
+/**
+ * Dibuja un punto (bola) azul en la posición especificada
+ * @param {CanvasRenderingContext2D} ctx - Contexto del canvas
+ * @param {number} x - Píxel X real en el canvas
+ * @param {number} y - Píxel Y real en el canvas
+ * @param {number} radio - Radio del punto
+ */
+export function dibujarBola(ctx, x, y, radio = 10) {
+    ctx.save();
     ctx.beginPath();
     ctx.arc(x, y, radio, 0, Math.PI * 2);
-    ctx.fillStyle = "#007bff"; 
+    ctx.fillStyle = "#007bff"; // Azul vibrante
     ctx.fill();
+    
+    // Un pequeño borde blanco para que resalte sobre cualquier color
     ctx.strokeStyle = "white";
     ctx.lineWidth = radio / 4;
     ctx.stroke();
+    ctx.restore();
 }
 
-export function dibujarCruz(ctx, x, y, tamano = 10) {
+/**
+ * Dibuja una cruz (X) roja en la posición especificada
+ * @param {CanvasRenderingContext2D} ctx - Contexto del canvas
+ * @param {number} x - Píxel X real en el canvas
+ * @param {number} y - Píxel Y real en el canvas
+ * @param {number} tamano - Tamaño de los brazos de la cruz
+ */
+export function dibujarCruz(ctx, x, y, tamano = 12) {
+    ctx.save();
     ctx.beginPath();
-    ctx.strokeStyle = "#ff0000";
-    ctx.lineWidth = tamano / 3;
+    ctx.strokeStyle = "#ff0000"; // Rojo puro
+    ctx.lineWidth = tamano / 2;
+    ctx.lineCap = "round";
+
+    // Brazo 1: \
     ctx.moveTo(x - tamano, y - tamano);
     ctx.lineTo(x + tamano, y + tamano);
+
+    // Brazo 2: /
     ctx.moveTo(x + tamano, y - tamano);
     ctx.lineTo(x - tamano, y + tamano);
+
     ctx.stroke();
+    ctx.restore();
 }
 
 export function refrescarLienzo(ctx, imagen) {

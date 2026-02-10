@@ -26,6 +26,8 @@ const AppState = {
         btnManual: document.getElementById('btnCalcularManual'),
         inputTemp: document.getElementById('inputTemp'),
         inputComp: document.getElementById('inputComp')
+        //
+        
     }
 };
 
