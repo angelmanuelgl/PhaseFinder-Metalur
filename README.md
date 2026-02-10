@@ -18,6 +18,8 @@ La aplicación permite obtener instantáneamente valores reales de temperatura y
 
 <img width="1012" height="628" alt="Vista previa de la interfaz" src="https://github.com/user-attachments/assets/f66be9e8-33d3-43aa-bbd9-4cb18cd897b4" />
 
+![Image](https://github.com/user-attachments/assets/2d3403e3-26fd-4060-84bb-052760a6eb92)
+
 ---
 
 ## 🚀 ¡Pruébalo ahora!
@@ -26,7 +28,7 @@ Haz clic en el botón para interactuar con la herramienta en vivo:
 
 [![Abrir App](https://img.shields.io/badge/DEMO-EJECUTAR_PROYECTO-blue?style=for-the-badge&logo=googlechrome&logoColor=white)](https://angelmanuelgl.github.io/proyectos/PhaseFinder_Metalur/)
 
-[![Report Bug](https://img.shields.io/badge/Reportar_Bug-red?style=for-the-badge&logo=github&logoColor=white)](mailto:tu-correo@ejemplo.com?subject=Bug%20Report%20-%20PhaseFinder)
+[![Report Bug](https://img.shields.io/badge/Reportar_Bug-red?style=for-the-badge&logo=github&logoColor=white)](mailto:go0zlo016@gmail.com?subject=Bug%20Report%20-%20PhaseFinder)
 
 ---
 
