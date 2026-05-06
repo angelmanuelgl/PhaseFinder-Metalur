@@ -40,10 +40,27 @@
 
                 <div class="result-card">
                     <h5>Resultados</h5>
-                    <div id="status">Selecciona un punto...</div>
+                    <!-- Sección para indicar la fase actual -->
+                    <div id="status" class="mb-2">Selecciona un punto...</div>
+                    <div id="faseActual" class="badge bg-info text-dark d-none">Fase: <span id="faseNombre">-</span></div>
+                    
                     <hr>
+                    
                     <p><strong>Límite Izquierdo:</strong> <span id="resIzq">-</span></p>
                     <p><strong>Límite Derecho:</strong> <span id="resDer">-</span></p>
+
+                    <!-- Espacio para la Regla de la Palanca -->
+                    <div id="contenedorPalanca" class="mt-3 p-2 border-top d-none">
+                        <h6>Regla de la Palanca</h6>
+                        <div class="d-flex justify-content-between small">
+                            <span>Fase Izq: <b id="percIzq">-</b>%</span>
+                            <span>Fase Der: <b id="percDer">-</b>%</span>
+                        </div>
+                        <div class="progress mt-2" style="height: 10px;">
+                            <div id="barraIzq" class="progress-bar bg-primary" role="progressbar" style="width: 0%"></div>
+                            <div id="barraDer" class="progress-bar bg-secondary" role="progressbar" style="width: 0%"></div>
+                        </div>
+                    </div>
                 </div>
 
                 <div class="mb-3 p-3 border rounded bg-light">

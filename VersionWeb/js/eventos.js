@@ -9,7 +9,9 @@ import * as calculos from './calculos.js';
 
 export function registrarEventos(state) {
      /*
-        C A M B I O    D E   G R A F I C A
+        --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
+        --- --- --- ---   C A M B I O    D E   G R A F I C A   --- --- --- ---
+        --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
     */
     state.elementos.select.addEventListener('change', async (e) => {
         const info = state.config[e.target.value];
@@ -42,7 +44,9 @@ export function registrarEventos(state) {
     });
 
     /*
-        B O T O N    M A N U A L
+        --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
+        --- --- --- --- --- B O T O N    M A N U A L --- --- --- --- ---
+        --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
     */
     state.elementos.btnManual.addEventListener('click', () => {
         if (!state.materialSeleccionado || !state.ctxLimpio) {
@@ -50,7 +54,8 @@ export function registrarEventos(state) {
             return;
         }
 
-        // 1. Obtener valores de los inputs
+        // --- --- --- --- --- INPUT  --- --- --- --- ---  
+        //  Obtener valores de los inputs
         const valTemp = parseFloat(state.elementos.inputTemp.value);
         const valComp = parseFloat(state.elementos.inputComp.value);
 
@@ -59,7 +64,8 @@ export function registrarEventos(state) {
             return;
         }
 
-        // 2. Llamar a la función maestra de calculos.js
+        // --- --- --- --- --- 2. CALCULOS  --- --- --- --- ---  
+        // Llamar a la función maestra de calculos.js
         // Pasamos: (Composición, Temperatura, Estado, ContextoBinarizado)
         const resultados = calculos.procesarPunto(
             valComp, 
@@ -69,12 +75,15 @@ export function registrarEventos(state) {
         );
         console.log("ingresado:", valComp, valTemp);
 
-        // 3. DAR RESPUESTA /// dibujando en el canvas
 
+        // --- --- --- --- --- MARCAR CANVAS --- --- --- --- ---  
         canvasTool.refrescarLienzo(state.elementos.canvas.getContext('2d'), state.imagenActual);
         
+        // diujar bolita en el punto exacto
         marcarPuntoEnGrafica("bolita", valComp, valTemp, state);
-        // 2. Las cruces rojas de los límites encontrados
+        
+        
+        // poner curces en los limites
         if (resultados.izqReal) {
             marcarPuntoEnGrafica("cruz", resultados.izqReal, valTemp, state);
             console.log("limite izquierda");
@@ -85,19 +94,48 @@ export function registrarEventos(state) {
         }
 
 
-        // 3. DAR RESPUESTA ///  Actualizar Textos (UI)
+        // --- --- --- --- ---  DAR RESPUESTA  --- --- --- --- --- 
+        //  Actualizar Textos (UI) DE IZQ Y DER
         state.elementos.resIzq.textContent = resultados.izqReal?.toFixed(4) || "No encontrado";
         state.elementos.resDer.textContent = resultados.derReal?.toFixed(4) || "No encontrado";
 
-        // 4. ¡LA MAGIA! Dibujar todo con una sola línea
+        // DAR  REGLA DE LA PALANA SI HAY DOS FASES
+        if( resultados.izqReal && resultados.derReal) {
+            const palanca = calculos.calcularPalanca(valComp, resultados.izqReal, resultados.derReal);
+            console.log("palanca", palanca);
+
+            if (palanca) {
+                // Mostrar contenedor
+                state.elementos.contenedorPalanca.classList.remove('d-none');
+                state.elementos.faseActual.classList.remove('d-none');
+                state.elementos.faseNombre.textContent = "Bifásica (L+S)";
+
+                // Actualizar textos
+                state.elementos.percIzq.textContent = palanca.izq.toFixed(1);
+                state.elementos.percDer.textContent = palanca.der.toFixed(1);
+
+                // Actualizar barras visuales
+                state.elementos.barraIzq.style.width = `${palanca.izq}%`;
+                state.elementos.barraDer.style.width = `${palanca.der}%`;
+            }
+        } else {
+            // Si no hay dos límites, es fase única
+            state.elementos.contenedorPalanca.classList.add('d-none');
+            state.elementos.faseNombre.textContent = "Fase Única";
+        }
+
+
+
+        // logs
         console.log("Estado actual de la imagen:", state.imagenActual)
         // actualizarGrafica(state, resultados, valComp, valTemp);
 
-        
     });
     
     /*
-        C L I C K   E N  C A N V A S
+        --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
+        --- --- --- ---  C L I C K   E N  C A N V A S  --- --- --- ---
+        --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
     */
     
     /*  ---  ---  ESTO ES PARA QUE ME SE MAS FACIL AGREGAR UNA NUEVA GRAFICA --- ---  */
@@ -238,7 +276,7 @@ function marcarPuntoEnGrafica(tipo, valorX, valorY, state) {
     );
 
     // 3. Tamaño del punto
-    const size = canvas.width * 0.01;
+    const size = canvas.width * 0.005;
 
     // 4. Dibujar (Sin multiplicar por nada, porque pxFinal ya es el píxel exacto)
     if (tipo === "bolita") {

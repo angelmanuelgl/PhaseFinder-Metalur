@@ -76,7 +76,7 @@ export function procesarPunto(valX, valY, materialConfig, ctxLimpio) {
 
     return {
         izqReal:izqReal, derReal:derReal, // RESPUESTAS en cordenadas reales
-        pIzq, pDer, // RES[UESTA en cordenadas pixeles
+        pIzq, pDer, // RESPUESTA en cordenadas pixeles
         px, py // devolvemos poscion  en coordenas p
     };
 }
@@ -105,4 +105,28 @@ export function datosRealesAClic(v, vMin, vMax, pStart, pEnd, invertir = false) 
     
     // 2. Trasladamos de regreso al origen de la imagen completa
     return pStart + pRelativo;
+}
+
+/**
+ * Calcula la regla de la palanca
+ * @param {number} c0 - Composición nominal (donde el usuario hizo clic)
+ * @param {number} cL - Límite izquierdo (fase A)
+ * @param {number} cS - Límite derecho (fase B)
+ */
+export function calcularPalanca(c0, cL, cS) {
+    if (cL === null || cS === null || cS === cL) return null;
+
+    // Proporción de la fase DERECHA (línea opuesta)
+    const porcDer = ((c0 - cL) / (cS - cL)) * 100;
+    // Proporción de la fase IZQUIERDA
+    const porcIzq = 100 - porcDer;
+
+    //  return { 
+    //     izq: 25, 
+    //     der: 75
+    // };
+    return { 
+        izq: Math.max(0, Math.min(100, porcIzq)), 
+        der: Math.max(0, Math.min(100, porcDer)) 
+    };
 }

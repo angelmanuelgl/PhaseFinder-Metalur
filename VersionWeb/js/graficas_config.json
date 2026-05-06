@@ -1,5 +1,5 @@
 {
-  "hierro_delta": {
+  "hierro_gamma": {
     "archivo_usuario": "usuario_Fe_13000_16000_0_1.jpg",
     "archivo_limpio": "limpia_Fe_13000_16000_0_1.jpeg",
     "x_min": 0.0,
@@ -12,6 +12,56 @@
     "limites_pixeles_usuario": {
       "x_start": 0.0963, "x_end": 0.9254,
       "y_start": 0.9187, "y_end": 0.0796
+    },
+
+    
+    "regiones": {
+        "Hierro Delta (BCC)": {
+            "x": 0.04, 
+            "y": 1500.0
+        },
+        "Austenita (Gamma)": {
+            "x": 0.4, 
+            "y": 1350.0
+        },
+        "Liquido": {
+            "x": 0.6, 
+            "y": 1550.0
+        },
+        "Combinacion Delta-Liquido": {
+            "x": 0.3, 
+            "y": 1510.0, 
+            "izq": "Hierro Delta", 
+            "der": "Liquido"
+        },
+        "Combinacion Delta-Gamma": {
+            "x": 0.08, 
+            "y": 1450.0, 
+            "izq": "Hierro Delta", 
+            "der": "Austenita"
+        },
+        "Combinacion Gamma-Liquido": {
+            "x": 0.4, 
+            "y": 1480.0, 
+            "izq": "Austenita", 
+            "der": "Liquido"
+        }
+    } 
+  },
+
+  "hierro L": {
+    "archivo_usuario": "usuario_FE_L.jpeg",
+    "archivo_limpio": "limpia_FE_L.jpeg",
+    "x_min": 0.0,
+    "x_max": 12.0,
+    "y_min": 0.0,
+    "y_max": 3000.0,
+    "unidad_x": "% Comp",
+    "unidad_y": "Temp",
+    "nombre_display": "Hiero -Carbono vista general",
+    "limites_pixeles_usuario": {
+      "x_start": 0.1077, "x_end": 0.9366,
+      "y_start": 0.8982, "y_end": 0.0910
     }    
   },
   "prueba": {

@@ -37,7 +37,8 @@ def procesar_y_guardar(ruta_imagen, carpeta_destino="img_limpias"):
 
 # usar
 if __name__ == "__main__":
-    ruta = "img/Fe_13000_16000_0_1.jpeg" 
+    # ruta = "img/Fe_13000_16000_0_1.jpeg" 
+    ruta = "img/FE_L.jpeg" 
     # ruta = "img/prueba.jpeg" 
 
     procesar_y_guardar(ruta)

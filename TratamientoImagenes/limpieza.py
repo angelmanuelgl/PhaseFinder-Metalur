@@ -15,7 +15,7 @@ def limpiar(img):
     
     # poner en binario
     # all abajo de 200 se vuelve negro (255)
-    _, img_binario = cv2.threshold(img, 210, 255, cv2.THRESH_BINARY_INV)
+    _, img_binario = cv2.threshold(img, 150, 255, cv2.THRESH_BINARY_INV)
 
     cnts, _ = cv2.findContours(img_binario, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
     cnt = max(cnts, key=cv2.contourArea) # el contorno mas grande es el marco
@@ -29,10 +29,10 @@ def limpiar(img):
 
     offset = 25
     img_limpia[0:offset, :] = 0      # Arriba
-    offset = 8
+    offset = 10 # 8
     img_limpia[-offset:, :] = 0      # Abajo
 
-    offset = 8
+    offset = 22 #8
     img_limpia[:, 0:offset] = 0      # Izquierda
     offset = 15
     img_limpia[:, -offset:] = 0      # Derecha

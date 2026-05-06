@@ -25,8 +25,15 @@ const AppState = {
         btnReiniciar: document.getElementById('btnReiniciar'),
         btnManual: document.getElementById('btnCalcularManual'),
         inputTemp: document.getElementById('inputTemp'),
-        inputComp: document.getElementById('inputComp')
+        inputComp: document.getElementById('inputComp'),
         //
+        contenedorPalanca: document.getElementById('contenedorPalanca'),
+        faseActual: document.getElementById('faseActual'),
+        faseNombre: document.getElementById('faseNombre'),
+        percIzq: document.getElementById('percIzq'),
+        percDer: document.getElementById('percDer'),
+        barraIzq: document.getElementById('barraIzq'),
+        barraDer: document.getElementById('barraDer'),
         
     }
 };
