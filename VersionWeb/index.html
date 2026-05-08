@@ -4,17 +4,34 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title> Metalur-App | Diagramas de Fase</title>
+    <!-- fuentes y formato de css -->
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    
-   <link rel="stylesheet" href="css/style.css">
+     <!--  latex  -->
+    <script>
+    window.MathJax = {
+        tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']], // Habilita el uso de $ para fórmulas
+        displayMath: [['$$', '$$'], ['\\[', '\\]']]
+        },
+        svg: {
+        fontCache: 'global'
+        }
+    };
+    </script>
+
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+    <!--  mis estilos -->
+    <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
 
 <header class="header-ug text-center">
     <div class="container">
         <h1>Metalur-App UG</h1>
-        <p class="lead">Cálculo de Regla de la Palanca (PROVISIONAL)</p>
+        <p class="lead">Cálculo de Regla de la Palanca</p>
     </div>
 </header>
 
@@ -38,29 +55,61 @@
                     </select>
                 </div>
 
+                 <!--- --- ---- ---  MOSTRAR LOS RTRSULTADOS  --- ---- ---- -->
                 <div class="result-card">
                     <h5>Resultados</h5>
                     <!-- Sección para indicar la fase actual -->
                     <div id="status" class="mb-2">Selecciona un punto...</div>
-                    <div id="faseActual" class="badge bg-info text-dark d-none">Fase: <span id="faseNombre">-</span></div>
+                    <div id="faseActual" class="badge bg-info text-dark">Fase: <span id="faseNombre">-</span></div>
                     
-                    <hr>
-                    
-                    <p><strong>Límite Izquierdo:</strong> <span id="resIzq">-</span></p>
-                    <p><strong>Límite Derecho:</strong> <span id="resDer">-</span></p>
+                    <!-- <hr> -->
+
+                    <div id="limites"  class="mt-3 p-2 border-top small">
+                        <h6>Limites de la region</h6>
+                        <div class=" small" >
+                            <span><strong>Límite Izquierdo:</strong> <span id="resIzq">-</span></span> 
+                            <br>
+                            <span><strong>Límite Derecho:</strong> <span id="resDer">-</span></span>
+                        </div>
+                    </div>
+
+                    <!-- Espacio para aviso -->
+                    <div id="aviso_contenedor" class="mt-3 p-2 border-top d-none">
+                        <span id="aviso_mensaje">Mensaje de aviso</span> 
+                        <h6 id="aviso_titulo" >--</h6>
+                        <div class="d-flex justify-content-between small">
+                            <span id="aviso_contenido">Fase </span>
+                        </div>
+                    </div>
 
                     <!-- Espacio para la Regla de la Palanca -->
                     <div id="contenedorPalanca" class="mt-3 p-2 border-top d-none">
                         <h6>Regla de la Palanca</h6>
                         <div class="d-flex justify-content-between small">
-                            <span>Fase Izq: <b id="percIzq">-</b>%</span>
-                            <span>Fase Der: <b id="percDer">-</b>%</span>
+                            <span>Fase <b id="nameIzq"></b>: <b id="percIzq">-</b>%</span>
+                            <span>Fase <b id="nameDer"></b>: <b id="percDer">-</b>%</span>
                         </div>
+
+                        <!-- varras de proreso -->
                         <div class="progress mt-2" style="height: 10px;">
                             <div id="barraIzq" class="progress-bar bg-primary" role="progressbar" style="width: 0%"></div>
                             <div id="barraDer" class="progress-bar bg-secondary" role="progressbar" style="width: 0%"></div>
                         </div>
                     </div>
+
+                    <details id="detallesPalanca" class="mt-3 small d-none">
+                        <summary class="text-primary" style="cursor: pointer;">Ver detalles del cálculo</summary>
+                        
+                        <div class="p-2 border rounded bg-white mt-2">
+                            <p class="mb-1 text-muted"><strong>Fórmula:</strong></p>
+                            <div class="text-center py-2">
+                                $W_L = \frac{C_s - C_0}{C_s - C_L} \times 100$
+                            </div>
+                            <p class="mb-1 text-muted"><strong>Sustitución:</strong></p>
+                            <div id="pasosSustitucion" class="d-none" style="font-family: monospace; font-size: 0.85rem;">
+                                </div>
+                        </div>
+                    </details>
                 </div>
 
                 <div class="mb-3 p-3 border rounded bg-light">

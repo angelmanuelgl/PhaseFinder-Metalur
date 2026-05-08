@@ -57,13 +57,85 @@
     "y_min": 0.0,
     "y_max": 3000.0,
     "unidad_x": "% Comp",
-    "unidad_y": "Temp",
+    "unidad_y": "Temp", 
     "nombre_display": "Hiero -Carbono vista general",
-    "limites_pixeles_usuario": {
+    "limites_pixeles_usuario_tanteo": {
       "x_start": 0.1077, "x_end": 0.9366,
       "y_start": 0.8982, "y_end": 0.0910
-    }    
+    }, 
+    "limites_pixeles_usuario": {
+      "x_start": 0.1045, "x_end": 0.9000,
+      "y_start": 0.9384, "y_end": 0.0934
+    }, 
+    
+
+    "regiones": {
+        "Liquido": {
+            "x": 3.0,
+            "y": 2000.0
+        },
+
+        "Austenita (Gamma)": {
+            "x": 1.0,
+            "y": 1100.0
+        },
+
+        "Cementita (Fe3C)": {
+            "x": 6.7,
+            "y": 500.0
+        },
+        "Combinacion Delta-Liquido": {
+            "x": 0.3,
+            "y": 1515.0,
+            "izq": "Hierro Delta",
+            "der": "Liquido"
+        },
+        "Combinacion Gamma-Liquido": {
+            "x": 3.0,
+            "y": 1300.0,
+            "izq": "Austenita",
+            "der": "Liquido"
+        },
+        "Combinacion Gamma-Cementita": {
+            "x": 4.0,
+            "y": 900.0,
+            "izq": "Austenita",
+            "der": "Cementita"
+        },
+        "Combinacion Alfa-Cementita": {
+            "x": 3.0,
+            "y": 400.0,
+            "izq": "Ferrita Alfa",
+            "der": "Cementita"
+        },
+        "Combinacion Alfa-Gamma": {
+            "x": 0.4,
+            "y": 800.0,
+            "izq": "Ferrita Alfa",
+            "der": "Austenita"
+        },
+        "Combinacion Liquido-Cementita": {
+            "x": 5.5,
+            "y": 1400.0,
+            "izq": "Liquido",
+            "der": "Cementita"
+        }
+    },
+
+    "otros": {
+        "Hierro Delta (BCC)": {
+            "x": 0.05,
+            "y": 1510.0
+        },
+        "Ferrita Alfa": {
+            "x": 0.01,
+            "y": 400.0
+        }
+   }
+
   },
+
+
   "prueba": {
     "archivo_usuario": "usuario_prueba.jpeg",
     "archivo_limpio": "limpia_prueba.jpeg",

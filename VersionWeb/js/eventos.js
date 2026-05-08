@@ -54,7 +54,7 @@ export function registrarEventos(state) {
             return;
         }
 
-        // --- --- --- --- --- INPUT  --- --- --- --- ---  
+        // --- --- --- --- --- --- --- --- --- ---   sINPUT  --- --- --- --- ---  --- --- --- --- ---   
         //  Obtener valores de los inputs
         const valTemp = parseFloat(state.elementos.inputTemp.value);
         const valComp = parseFloat(state.elementos.inputComp.value);
@@ -64,9 +64,10 @@ export function registrarEventos(state) {
             return;
         }
 
-        // --- --- --- --- --- 2. CALCULOS  --- --- --- --- ---  
+        // --- --- --- --- ---  --- --- --- --- ---   CALCULOS  --- --- --- --- ---   --- --- --- --- ---  
         // Llamar a la función maestra de calculos.js
         // Pasamos: (Composición, Temperatura, Estado, ContextoBinarizado)
+        // limites izquierdo y derechos
         const resultados = calculos.procesarPunto(
             valComp, 
             valTemp, 
@@ -75,8 +76,18 @@ export function registrarEventos(state) {
         );
         console.log("ingresado:", valComp, valTemp);
 
+        // la region donde se hizo click
+        const nombreRegion = calculos.deCualRegionEs(
+            resultados.px, 
+            resultados.py, 
+            state.materialSeleccionado, 
+            state.ctxLimpio
+        );
+        const datosRegion = state.materialSeleccionado?.regiones?.[nombreRegion];
+  
 
-        // --- --- --- --- --- MARCAR CANVAS --- --- --- --- ---  
+
+        // --- --- --- --- ---  --- --- --- --- ---   MARCAR CANVAS --- --- --- --- ---  --- --- --- --- ---   
         canvasTool.refrescarLienzo(state.elementos.canvas.getContext('2d'), state.imagenActual);
         
         // diujar bolita en el punto exacto
@@ -94,34 +105,129 @@ export function registrarEventos(state) {
         }
 
 
-        // --- --- --- --- ---  DAR RESPUESTA  --- --- --- --- --- 
+        
+
+        // --- --- --- --- ---   --- --- --- --- ---   DAR RESPUESTA UI --- --- --- --- ---  --- --- --- --- ---  
         //  Actualizar Textos (UI) DE IZQ Y DER
         state.elementos.resIzq.textContent = resultados.izqReal?.toFixed(4) || "No encontrado";
         state.elementos.resDer.textContent = resultados.derReal?.toFixed(4) || "No encontrado";
 
-        // DAR  REGLA DE LA PALANA SI HAY DOS FASES
-        if( resultados.izqReal && resultados.derReal) {
+        //  --- --- --- --- ---  AVISOS  --- --- --- --- ---  
+        // si es bifasico y no encontramos limites,
+        // poner texto con salto de linea explicando que puede ser por estar muy cerca del limite o por imprecisión de la gráfica
+        state.elementos.avisoContenedor.classList.add('d-none'); // ocultamos por defecto
+ 
+        if( datosRegion && datosRegion.izq && datosRegion.der && (!resultados.izqReal || !resultados.derReal) ){
+            state.elementos.avisoContenedor.classList.remove('d-none');
+            state.elementos.avisoTitulo.textContent = "¡Atención!";
+            state.elementos.avisoContenido.innerHTML = `
+                Se esperaba una región bifásica (<b>${datosRegion.izq} + ${datosRegion.der}</b>), pero no se encontraron ambos límites. 
+                <br><br>
+                
+                <b>Sugerencia:</b>
+                <ul class="mt-1 mb-0">
+                    <li>Seleccionar un punto más alejado del límite.</li>
+                    <li>Mover el cursor para seleccionar otro punto cercano.</li>
+                    <li><b>Cambiar de grafica. </b></li>
+                </ul>
+
+                <br>
+                Esto puede deberse a:
+                <ul class="mt-2 mb-0">
+                    <li>El punto seleccionado está muy cerca de una línea de fase.</li>
+                    <li>El escaneo horizontal no alcanzó a cruzar un borde negro.</li>
+                    <li>La imagen de la grafica atual no contiene ambos límites.</li>
+                </ul>
+
+            `;
+    }else{
+            state.elementos.avisoContenedor.classList.add('d-none');
+        }
+
+        //  --- --- --- --- ---  NOMBRE  DE FASE  --- --- --- --- ---  
+        state.elementos.faseNombre.textContent = `${nombreRegion}`;
+        //   CASO BIFÁSICO 
+        if( datosRegion && datosRegion.izq && datosRegion.der ){
+            // Cambiamos a un color que resalte la combinación (ej: Warning/Naranja o Success/Verde)
+            state.elementos.faseActual.classList.remove('bg-info', 'text-dark'); 
+            state.elementos.faseActual.classList.add('bg-warning', 'text-dark');
+        }
+        //  CASO MONOFÁSICO 
+        else {
+            // Volvemos al color original (Info/Azul claro)
+            state.elementos.faseActual.classList.remove('bg-warning');
+            state.elementos.faseActual.classList.add('bg-info', 'text-dark');
+        }
+
+
+        //  --- --- --- --- ---  REGLA PALANCA  --- --- --- --- ---  
+        // Solo si tenemos dos límites (bifásico) ( la región tiene datos de fases(
+        // y si encontramos limites aplicamos la regla de la palanca
+        if( resultados.izqReal && resultados.derReal && datosRegion && datosRegion.izq  && datosRegion.der ) {
+            
             const palanca = calculos.calcularPalanca(valComp, resultados.izqReal, resultados.derReal);
             console.log("palanca", palanca);
-
+            
+        
             if (palanca) {
                 // Mostrar contenedor
                 state.elementos.contenedorPalanca.classList.remove('d-none');
-                state.elementos.faseActual.classList.remove('d-none');
-                state.elementos.faseNombre.textContent = "Bifásica (L+S)";
 
                 // Actualizar textos
+                state.elementos.nameIzq.textContent = datosRegion.izq;
+                state.elementos.nameDer.textContent = datosRegion.der;
+
                 state.elementos.percIzq.textContent = palanca.izq.toFixed(1);
                 state.elementos.percDer.textContent = palanca.der.toFixed(1);
 
                 // Actualizar barras visuales
                 state.elementos.barraIzq.style.width = `${palanca.izq}%`;
                 state.elementos.barraDer.style.width = `${palanca.der}%`;
+
+                // Generar Memoria de Cálculo
+                state.elementos.detallesPalanca.classList.remove('d-none');
+                state.elementos.pasosSustitucion.classList.remove('d-none');
+                
+
+                // paso a paso la regla de la palanca
+                const C0 = valComp.toFixed(3);
+                const CL = resultados.izqReal.toFixed(3);
+                const CS = resultados.derReal.toFixed(3);
+                const P_der = palanca.der.toFixed(1);
+                const P_izq = palanca.izq.toFixed(1);
+                
+                state.elementos.pasosSustitucion.innerHTML = `
+                    <div class="mb-3">
+                        <strong>1. Datos identificados:</strong><br>
+                        $C_0 = ${C0}\%$, $C_{izq} = ${CL}\%$, $C_{der} = ${CS}\%$
+                    </div>
+                    
+                    <div class="mb-3">
+                        <strong>2. Fase ($W_{der}$):</strong><br>
+                        $W_{der} = \\frac{C_0 - C_{izq}}{C_{der} - C_{izq}} = \\frac{${C0} - ${CL}}{${CS} - ${CL}} = \\mathbf{${P_der}\%}$
+                    </div>
+
+                    <div>
+                        <strong>3. Fase  ($W_{izq}$):</strong><br>
+                        $W_{izq} = 100 - W_{der} = 100 - ${P_der} = \\mathbf{${P_izq}\%}$
+                    </div>
+                `;
+
+                // CRÍTICO: Decirle a MathJax que renderice el nuevo contenido
+                if(window.MathJax){
+                    MathJax.typesetPromise([state.elementos.pasosSustitucion]);
+                    console.log("MathJax renderizado para la memoria de cálculo.");
+                }else{
+                    console.warn("MathJax no está disponible. La memoria de cálculo puede no mostrarse correctamente.")
+                }
             }
+
+
         } else {
             // Si no hay dos límites, es fase única
             state.elementos.contenedorPalanca.classList.add('d-none');
-            state.elementos.faseNombre.textContent = "Fase Única";
+            state.elementos.pasosSustitucion.classList.add('d-none');
+            state.elementos.detallesPalanca.classList.add('d-none');
         }
 
 
@@ -139,39 +245,25 @@ export function registrarEventos(state) {
     */
     
     /*  ---  ---  ESTO ES PARA QUE ME SE MAS FACIL AGREGAR UNA NUEVA GRAFICA --- ---  */
-    // state.elementos.canvas.addEventListener('click', (e) => {
-    //     const canvas = state.elementos.canvas;
-    //     const rect = canvas.getBoundingClientRect();
-
-    //     // 1. posicion RELATIVA (de 0 a 1)
-    //     const xRel = (e.clientX - rect.left) / rect.width;
-    //     const yRel = (e.clientY - rect.top) / rect.height;
-        
-    //     //! info importante para poner en el json
-    //     // alert(`xRel: ${xRel.toFixed(4)}, clientWidth: ${canvas.clientWidth}, zoom: ${window.devicePixelRatio}`);
-    //     // alert(`xRel: ${xRel.toFixed(4)}, yRel: ${yRel.toFixed(4)},`);
-
-
-    //     if (!info || !info.limites_pixeles_usuario) {
-    //         console.log(`%c [DEBUG] xRel: ${xRel.toFixed(4)}, yRel: ${yRel.toFixed(4)}`, "color: cyan;");
-    //         return;
-    //     }
-
-    // });
     state.elementos.canvas.addEventListener('click', (e) => {
         const canvas = state.elementos.canvas;
         const rect = canvas.getBoundingClientRect();
         const info = state.materialSeleccionado;
 
-        // 1. posicion RELATIVA (Invariante)
+        // 1. posicion RELATIVA (de 0 a 1)  (Invariante)
         const xRel = (e.clientX - rect.left) / rect.width;
         const yRel = (e.clientY - rect.top) / rect.height;
+        
+        //! info importante para poner en el json
+        // alert(`xRel: ${xRel.toFixed(4)}, yRel: ${yRel.toFixed(4)},`);
+        console.log(`clientWidth: ${canvas.clientWidth}, zoom: ${window.devicePixelRatio}`);
+        console.log(`xRel: ${xRel.toFixed(4)}, yRel: ${yRel.toFixed(4)},`);
 
-        if (!info || !info.limites_pixeles_usuario) {
-            console.log(`%c [DEBUG] xRel: ${xRel.toFixed(4)}, yRel: ${yRel.toFixed(4)}`, "color: cyan;");
-            return;
+        if( info && info.limites_pixeles_usuario ){
+            const cal = info.limites_pixeles_usuario;
+            console.log("limites del json", cal);
         }
-
+        
         const cal = info.limites_pixeles_usuario;
 
         // 2. Calculo de valores reales usando xRel/yRel como el parámetro 'p'

@@ -43,3 +43,21 @@ canvas {
     text-align: center;
     border-top: 1px solid #ddd;
 }
+
+
+/* la parte dodndse pnene los datos  */
+.progress {
+    background-color: #dee2e6;
+    border-radius: 5px;
+    overflow: hidden;
+}
+
+#barraIzq {
+    transition: width 0.4s ease;
+    background-color: #003366 !important; /* Color institucional */
+}
+
+#barraDer {
+    transition: width 0.4s ease;
+    background-color: #6c757d !important;
+}

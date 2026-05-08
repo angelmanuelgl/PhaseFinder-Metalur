@@ -130,3 +130,79 @@ export function calcularPalanca(c0, cL, cS) {
         der: Math.max(0, Math.min(100, porcDer)) 
     };
 }
+
+/**
+ * Determina si un punto pertenece a una región mediante trazado de línea recta.
+ * @param {string} nombreRegion - Clave de la región en el JSON.
+ * @param {number} px - Píxel X del punto de interés.
+ * @param {number} py - Píxel Y del punto de interés.
+ * @param {Object} materialConfig - Configuración del material.
+ * @param {CanvasRenderingContext2D} ctxLimpio - Contexto de la imagen binarizada.
+ * @returns {boolean} - True si no hay obstrucciones (píxeles blancos) en el camino.
+ */
+export function perteneceEnEstaRegion(nombreRegion, px, py, materialConfig, ctxLimpio) {
+    const region = materialConfig.regiones[nombreRegion];
+    if (!region) return false;
+
+    const width = ctxLimpio.canvas.width;
+    const height = ctxLimpio.canvas.height;
+
+    // 1. Convertir coordenadas reales del representante a píxeles
+    const targetPx = valorAPixel(region.x, materialConfig.x_min, materialConfig.x_max, width);
+    const targetPy = valorAPixel(region.y, materialConfig.y_min, materialConfig.y_max, height, true);
+
+    // 2. Algoritmo de trazado de línea (DDA simplificado)
+    const dx = targetPx - px;
+    const dy = targetPy - py;
+    const pasos = Math.max(Math.abs(dx), Math.abs(dy));
+
+    if (pasos === 0) return true;
+
+    const xInc = dx / pasos;
+    const yInc = dy / pasos;
+
+    let xActual = px;
+    let yActual = py;
+
+    // 3. Muestrear la imagen binarizada a lo largo de la trayectoria
+    for (let i = 0; i <= pasos; i++) {
+        const checkX = Math.round(xActual);
+        const checkY = Math.round(yActual);
+
+        // Obtener color del píxel (Canal R es suficiente para binarizada)
+        const pixelData = ctxLimpio.getImageData(checkX, checkY, 1, 1).data;
+        
+        // Si el píxel es blanco (> 128), cruzamos un borde
+        if (pixelData[0] > 128) {
+            return false; 
+        }
+
+        xActual += xInc;
+        yActual += yInc;
+    }
+
+    return true;
+}
+
+/**
+ * Identifica a qué región pertenece el punto clicado.
+ * @param {number} px - Píxel X.
+ * @param {number} py - Píxel Y.
+ * @param {Object} materialConfig - Configuración.
+ * @param {CanvasRenderingContext2D} ctxLimpio - Contexto binarizado.
+ * @returns {string} - Nombre de la región encontrada o "Desconocida".
+ */
+export function deCualRegionEs(px, py, materialConfig, ctxLimpio) {
+    if (!materialConfig.regiones) return "Desconocida";
+
+    // Iterar por las regiones definidas en el JSON
+    for( const nombreRegion in materialConfig.regiones) {
+        // Ignoramos las combinaciones si solo buscamos regiones monofásicas puras inicialmente,
+        // o las incluimos según tu lógica de regiones.
+        if (perteneceEnEstaRegion(nombreRegion, px, py, materialConfig, ctxLimpio)) {
+            return nombreRegion;
+        }
+    }
+
+    return "Región no identificada";
+}
