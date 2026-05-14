@@ -7,8 +7,8 @@
     "y_min": 1300.0,
     "y_max": 1600.0,
     "unidad_x": "%C",
-    "unidad_y": "°C",
-    "nombre_display": "Hierro-Carbono",
+    "unidad_y": "°T",
+    "nombre_display": "Hierro-Carbono zona Delta",
     "limites_pixeles_usuario": {
       "x_start": 0.0963, "x_end": 0.9254,
       "y_start": 0.9187, "y_end": 0.0796
@@ -58,7 +58,7 @@
     "y_max": 3000.0,
     "unidad_x": "% Comp",
     "unidad_y": "Temp", 
-    "nombre_display": "Hiero -Carbono vista general",
+    "nombre_display": "Hiero-Carbono vista general",
     "limites_pixeles_usuario_tanteo": {
       "x_start": 0.1077, "x_end": 0.9366,
       "y_start": 0.8982, "y_end": 0.0910
@@ -135,6 +135,51 @@
 
   },
 
+
+
+
+    "hierro_alpha": {
+        "archivo_usuario": "usuario_Fe_3.PNG",
+        "archivo_limpio": "limpia_Fe_3.jpg",
+        "x_min": 0.0,
+        "x_max": 2.2,
+        "y_min": 660.0,
+        "y_max": 1180.0,
+        "unidad_x": "%C",
+        "unidad_y": "°T",
+
+        "nombre_display": "Hierro-Carbono zona alpha",
+
+        "limites_pixeles_usuario": {
+        "x_start": 0.0514, "x_end": 0.9829,
+        "y_start": 0.9398, "y_end": 0.0412
+        },
+
+        "regiones": {
+            "Ferrita Alfa": {
+                "x": 0.0001,
+                "y": 740.0
+            },
+
+            "Austenita (Gamma)": {
+                "x": 1.0,
+                "y": 1100.0
+            },
+
+            "Combinacion Alfa-Gamma": {
+                "x": 0.3,
+                "y": 760.0,
+                "izq": "Ferrita Alfa",
+                "der": "Austenita Gamma"
+            },
+            "Combinacion Austenita-Cementita":	{
+                "x": 1.6,
+                "y": 820.0,
+                "izq": "Austenita Gamma",
+                "der": "Cementita Fe3C"
+           }
+        }
+    },
 
   "prueba": {
     "archivo_usuario": "usuario_prueba.jpeg",
